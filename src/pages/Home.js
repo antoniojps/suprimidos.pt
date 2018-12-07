@@ -19,26 +19,27 @@ class Home extends Component {
     }
   }
 
-  componentWillMount() {
+  async componentWillMount() {
+    const { locations } = Loc
     // API Calls
-    this.props.actions.getLastSuppressed()
-    for (let location of Loc.locations) {
-      this.props.actions.getLastSuppressedByLocation(location.key)
-      this.props.actions.getLastWeeksSuppressedByLocation(location.key)
-
-      console.log(this.props.allSuppressedContent[`fetchedLastSuppressedIn${location.key}`])
-    }
+    await this.props.actions.getLastSuppressed()
+    await Promise.all(
+      locations.map(async ({ key }) => {
+        await this.props.actions.getLastSuppressedByLocation(key)
+        await this.props.actions.getLastWeeksSuppressedByLocation(key)
+      })
+    )
   }
 
-  
+
 
   componentDidUpdate() {
     let total = 0
     let missing = false
     for (let location of Loc.locations) {
-      
+
       let data = this.props.allSuppressedContent[`fetchedLastWeeksSuppressedIn${location.key}`]
-      
+
       if(typeof data === 'undefined'){
         missing = true
       } else {
@@ -128,7 +129,7 @@ class Home extends Component {
   }
 
   renderCount(count) {
-    if (count) {  
+    if (count) {
       let randomStart = Math.floor(Math.random() * (20 - 1 + 1)) + 1;
 
       return <CountUp

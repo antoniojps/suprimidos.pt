@@ -72,22 +72,22 @@ class contentApi {
     })
   }
 
-  static lastSuppressedLastWeeksByLocation(location) {
-    const request = new Request(`https://api.suprimidos.pt/data.php?lineWeek=${location}`, {
+  static async lastSuppressedLastWeeksByLocation(location) {
+    const request = new Request(`https://tomahock.com/cenas/suprimidos/data.php?lineWeek=${location}`, {
       method: 'GET',
       headers: new Headers({
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       })
     })
-    return fetch(request).then(response => {
-      if (response.status === 200) {
-        return response.json()
-      }
-      return response.json().then(response => { throw (response) })
-    }).catch(error => {
+    try {
+      const response = await fetch(request)
+      const data = await response.json()
+      if (response.status !== 200) throw (response)
+      return data
+    } catch (error) {
       throw (error)
-    })
+    }
   }
 
   static allSuppressedByLocation(location) {
