@@ -9,6 +9,8 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as suppressedActions from '../actions/suppressedActions'
 import Loc from '../locations.json'
+import { allSuppressedContentToHeatMapData } from './../utils/filter'
+import HeatMap from './../components/HeatMap'
 
 class Home extends Component {
 
@@ -16,12 +18,16 @@ class Home extends Component {
     super(props)
     this.state = {
       totalSuppressed: 0,
+      fetchedAll: false,
     }
   }
 
   async componentWillMount() {
     const { locations } = Loc
     // API Calls
+    this.setState({
+      fetchedAll: false,
+    })
     await this.props.actions.getLastSuppressed()
     await Promise.all(
       locations.map(async ({ key }) => {
@@ -29,9 +35,10 @@ class Home extends Component {
         await this.props.actions.getLastWeeksSuppressedByLocation(key)
       })
     )
+    this.setState({
+      fetchedAll: true,
+    })
   }
-
-
 
   componentDidUpdate() {
     let total = 0
@@ -107,26 +114,22 @@ class Home extends Component {
     )
   }
 
-  handleLinesWeeks() {
-    let allLines = []
-    for (let location of Loc.locations) {
-      if (this.props.allSuppressedContent[`fetchedLastWeeksSuppressedIn${location.key}`]) {
-        allLines = [...allLines, this.renderLineWeeks(location, this.props.allSuppressedContent[`fetchedLastWeeksSuppressedIn${location.key}`])]
-      }
-    }
-    return allLines
+  renderHeatMap() {
+    if (!this.state.fetchedAll) return;
+    const { locations } = Loc
+    const allSuppressedContent = locations.map(location => {
+      const week = this.props.allSuppressedContent[`fetchedLastWeeksSuppressedIn${location.key}`]
+      return {
+        week,
+        line: location.value
+       }
+    })
+
+    const data = allSuppressedContentToHeatMapData(allSuppressedContent)
+    return (<HeatMap data={data}/>)
+
   }
 
-  renderLineWeeks(location, content) {
-    return (
-      <tr key={location.key}>
-        <td>{location.value}</td>
-        {content.map((item, index) => (
-          <td key={index}>{this.renderCount(item.count)}</td>
-        ))}
-      </tr>
-    )
-  }
 
   renderCount(count) {
     if (count) {
@@ -191,40 +194,9 @@ class Home extends Component {
           <h2 className="text-center">Total de comboios suprimidos nos últimos dias: {this.state.totalSuppressed}</h2>
           </Container>
         </Jumbotron>
-
         <Container>
           <Row>
-            <Col xs={12}>
-              <Card>
-                <Card.Body className="text-center">
-                  <Table responsive>
-                    <thead>
-                      <tr>
-                        <th>Linha / Dia</th>
-                        <th>{moment().subtract(14, 'day').format('D')}</th>
-                        <th>{moment().subtract(13, 'day').format('D')}</th>
-                        <th>{moment().subtract(12, 'day').format('D')}</th>
-                        <th>{moment().subtract(11, 'day').format('D')}</th>
-                        <th>{moment().subtract(10, 'day').format('D')}</th>
-                        <th>{moment().subtract(9, 'day').format('D')}</th>
-                        <th>{moment().subtract(8, 'day').format('D')}</th>
-                        <th>{moment().subtract(7, 'day').format('D')}</th>
-                        <th>{moment().subtract(6, 'day').format('D')}</th>
-                        <th>{moment().subtract(5, 'day').format('D')}</th>
-                        <th>{moment().subtract(4, 'day').format('D')}</th>
-                        <th>{moment().subtract(3, 'day').format('D')}</th>
-                        <th>{moment().subtract(2, 'day').format('D')}</th>
-                        <th>{moment().subtract(1, 'day').format('D')}</th>
-                        <th>{moment().format('D')}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {this.handleLinesWeeks()}
-                    </tbody>
-                  </Table>
-                </Card.Body>
-              </Card>
-            </Col>
+            {this.renderHeatMap()}
           </Row>
         </Container>
       </div>

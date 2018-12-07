@@ -98,8 +98,8 @@ export function fetchedLastWeeksSuppressedByLocation(response, location) {
 export function getLastWeeksSuppressedByLocation(location) {
   return async dispatch => {
     try {
-    dispatch(fetchingLastWeeksSuppressedByLocation(location))
-    const lastWeekSurpressed = await contentApi.lastSuppressedLastWeeksByLocation(location)
+      dispatch(fetchingLastWeeksSuppressedByLocation(location))
+      const lastWeekSurpressed = await contentApi.lastSuppressedLastWeeksByLocation(location)
       dispatch(fetchedLastWeeksSuppressedByLocation(lastWeekSurpressed, location))
     } catch (error) {
       dispatch(errorFetchingLastWeeksSuppressedByLocation(error, location))
