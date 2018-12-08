@@ -5,7 +5,7 @@ export function lastWeeksByLocationToHeatMapData({ week, line }) {
   const reducer = (accumulator, lineDay) => {
     const { year, month, day, count } = lineDay
     const date = `${year}-${month}-${day}`
-    const formattedDate = moment(date).format("MMM Do")
+    const formattedDate = moment(date).format("DD")
     accumulator[formattedDate] = count
     return accumulator
   }

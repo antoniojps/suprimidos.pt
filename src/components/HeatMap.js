@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 import { ResponsiveHeatMap } from '@nivo/heatmap'
 import styled from 'styled-components'
 
@@ -16,45 +16,43 @@ export default class HeatMap extends Component {
         const keys = this.getDaysArr(data)
         return (
             <Wrapper>
-            <ResponsiveHeatMap
+                <ResponsiveHeatMap
                     data={data}
                     keys={keys}
                     indexBy="line"
                     margin={{
-                        top: 50,
-                        right: 60,
-                        bottom: 60,
-                        left: 100
+                        "top": 70,
+                        "right": 60,
+                        "bottom": 60,
+                        "left": 100
                     }}
                     colors="blues"
                     axisTop={{
-                        orient: "top",
-                        tickSize: 10,
-                        tickPadding: 5,
-                        tickRotation: -90,
+                        "orient": "top",
+                        "tickSize": 5,
+                        "tickPadding": 5,
+                        "tickRotation": 0,
+                        "legend": "Dia",
+                        "legendPosition": "middle",
+                        "legendOffset": -40
                     }}
                     axisLeft={{
-                        orient: "left",
-                        tickSize: 5,
-                        tickPadding: 5,
-                        tickRotation: 0,
-                        legend: "linhas",
-                        legendPosition: "middle",
-                        legendOffset: -90
+                        "orient": "left",
+                        "tickSize": 5,
+                        "tickPadding": 5,
+                        "tickRotation": 0,
+                        "legend": "Linha",
+                        "legendPosition": "middle",
+                        "legendOffset": -90
                     }}
                     cellOpacity={1}
                     cellBorderColor="inherit:darker(0.4)"
                     labelTextColor="inherit:darker(1.8)"
-                    fill={[
-                        {
-                            id: "lines"
-                        }
-                    ]}
-                    motionStiffness={80}
-                    motionDamping={9}
-                    hoverTarget="cell"
-                    cellHoverOthersOpacity={0.25}
                     animate={false}
+                    motionStiffness={0}
+                    motionDamping={0}
+                    hoverTarget="row"
+                    cellHoverOthersOpacity={0.25}
                 />
             </Wrapper>
     )
